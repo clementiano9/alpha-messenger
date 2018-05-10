@@ -97,13 +97,13 @@ class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>
         firebaseAuth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        Log.d(TAG, "Sign in successful")
+                        Log.d(TAG, "Signed in")
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     } else {
                         // Unsuccessful
                         Log.w(TAG, "Sign in failure", it.exception)
-                        Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Incorrect email/password", Toast.LENGTH_SHORT).show()
                         showProgress(false)
                     }
                 }

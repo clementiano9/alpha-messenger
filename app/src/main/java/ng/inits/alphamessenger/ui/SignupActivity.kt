@@ -29,10 +29,13 @@ import android.widget.Toast
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 
 import kotlinx.android.synthetic.main.activity_signup.*
 import ng.inits.alphamessenger.MainActivity
 import ng.inits.alphamessenger.R
+import ng.inits.alphamessenger.data.User
 
 /**
  * A login screen that offers login via email/password.
@@ -40,6 +43,8 @@ import ng.inits.alphamessenger.R
 class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseDatabase = FirebaseDatabase.getInstance()
+    private val databaseReference = firebaseDatabase.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,19 +156,17 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                 .addOnCompleteListener { task: Task<AuthResult> ->
                     Log.d(TAG, "Sign in completed: ${task.isSuccessful}")
 
-                    if (!task.isSuccessful) {
+                    if (task.isSuccessful) {
+                        // Successful
+                        Log.d(TAG, "Login was successful")
+                        saveUserInDb(emailStr, task.result.user)
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        // Failure
                         Log.w(TAG, "createUserWithEmail failure", task.exception)
                         task.exception?.printStackTrace()
                         Toast.makeText(this, "Sign up failed", Toast.LENGTH_LONG).show()
-                        /*if (task.exception is FirebaseAuthInvalidUserException?) {
-                            // User has not been created
-                            createFirebaseUser(emailStr, passwordStr)
-                        }*/
-                    } else {
-                        // Successful
-                        Log.d(TAG, "Login was successful")
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
                     }
                 }
                 .addOnFailureListener {
@@ -172,7 +175,23 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                 }
     }
 
-    private fun createFirebaseUser(emailStr: String, passwordStr: String) {
+    /**
+     * Save user details in realtime database
+     * user: id, email, password
+     */
+    private fun saveUserInDb(emailStr: String, user: FirebaseUser?) {
+        Log.d(TAG, "Save user to database, uid = ${user?.uid}")
+        val saveUser = User(id = user?.uid!!, email = emailStr)
+        Log.d(TAG, "Saved user")
+
+        databaseReference.child("users").child(saveUser.id).setValue(saveUser)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Log.d(TAG, "Successfully save user in realtime db")
+                    } else {
+                        Log.e(TAG, "Error Saving user in realtime db", it.exception)
+                    }
+                }
 
     }
 
