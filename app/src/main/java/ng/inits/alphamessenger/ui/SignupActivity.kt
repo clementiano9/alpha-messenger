@@ -48,13 +48,13 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         populateAutoComplete()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
+                attemptSignup()
                 return@OnEditorActionListener true
             }
             false
         })
 
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        email_sign_in_button.setOnClickListener { attemptSignup() }
     }
 
     override fun onStart() {
@@ -106,7 +106,7 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private fun attemptLogin() {
+    private fun attemptSignup() {
         // Reset errors.
         email.error = null
         password.error = null
@@ -137,14 +137,9 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView?.requestFocus()
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             showProgress(true)
-            //startActivity(Intent(this, MainActivity::class.java))
             signUp(emailStr, passwordStr)
         }
     }
