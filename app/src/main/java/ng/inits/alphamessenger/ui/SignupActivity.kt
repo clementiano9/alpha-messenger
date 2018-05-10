@@ -1,4 +1,4 @@
-package ng.inits.alphamessenger
+package ng.inits.alphamessenger.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -11,7 +11,6 @@ import android.content.CursorLoader
 import android.content.Loader
 import android.database.Cursor
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -24,18 +23,27 @@ import android.widget.TextView
 import java.util.ArrayList
 import android.Manifest.permission.READ_CONTACTS
 import android.content.Intent
+import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 
-import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_signup.*
+import ng.inits.alphamessenger.MainActivity
+import ng.inits.alphamessenger.R
 
 /**
  * A login screen that offers login via email/password.
  */
-class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
+class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_signup)
         // Set up the login form.
         populateAutoComplete()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -47,6 +55,12 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         })
 
         email_sign_in_button.setOnClickListener { attemptLogin() }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = firebaseAuth.currentUser
+        //updateUI(currentUser)
     }
 
     private fun populateAutoComplete() {
@@ -130,8 +144,41 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            startActivity(Intent(this, MainActivity::class.java))
+            //startActivity(Intent(this, MainActivity::class.java))
+            signUp(emailStr, passwordStr)
         }
+    }
+
+    private fun signUp(emailStr: String, passwordStr: String) {
+        //FirebaseApp.initializeApp(this)
+
+        firebaseAuth.createUserWithEmailAndPassword(emailStr, passwordStr)
+                .addOnCompleteListener { task: Task<AuthResult> ->
+                    Log.d(TAG, "Sign in completed: ${task.isSuccessful}")
+
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "createUserWithEmail failure", task.exception)
+                        task.exception?.printStackTrace()
+                        Toast.makeText(this, "Sign up failed", Toast.LENGTH_LONG).show()
+                        /*if (task.exception is FirebaseAuthInvalidUserException?) {
+                            // User has not been created
+                            createFirebaseUser(emailStr, passwordStr)
+                        }*/
+                    } else {
+                        // Successful
+                        Log.d(TAG, "Login was successful")
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "Exception signing in user")
+                    it.printStackTrace()
+                }
+    }
+
+    private fun createFirebaseUser(emailStr: String, passwordStr: String) {
+
     }
 
     private fun isEmailValid(email: String): Boolean {
@@ -212,7 +259,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
 
     private fun addEmailsToAutoComplete(emailAddressCollection: List<String>) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        val adapter = ArrayAdapter(this@LoginActivity,
+        val adapter = ArrayAdapter(this@SignupActivity,
                 android.R.layout.simple_dropdown_item_1line, emailAddressCollection)
 
         email.setAdapter(adapter)
@@ -232,5 +279,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
          * Id to identity READ_CONTACTS permission request.
          */
         private val REQUEST_READ_CONTACTS = 0
+        private val TAG: String = SignupActivity::class.java.simpleName
     }
 }
