@@ -29,6 +29,7 @@ import android.widget.Toast
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 
@@ -160,13 +161,18 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                         // Successful
                         Log.d(TAG, "Login was successful")
                         saveUserInDb(emailStr, task.result.user)
-                        startActivity(Intent(this, MainActivity::class.java))
+                        startActivity(Intent(this, SetupActivity::class.java))
                         finish()
                     } else {
                         // Failure
                         Log.w(TAG, "createUserWithEmail failure", task.exception)
                         task.exception?.printStackTrace()
-                        Toast.makeText(this, "Sign up failed", Toast.LENGTH_LONG).show()
+                        if (task.exception is FirebaseAuthUserCollisionException)
+                            Toast.makeText(this, "This email has already been used", Toast.LENGTH_LONG).show()
+                        else
+                            Toast.makeText(this, "Incorrect email/password", Toast.LENGTH_LONG).show()
+
+                        showProgress(false)
                     }
                 }
                 .addOnFailureListener {

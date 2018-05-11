@@ -35,6 +35,8 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.1'
 
+    kapt "com.android.databinding:compiler:$android_plugin_version"
+
     // RxJava
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'io.reactivex:rxjava:1.1.6'

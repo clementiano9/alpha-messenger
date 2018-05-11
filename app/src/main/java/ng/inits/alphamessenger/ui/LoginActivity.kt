@@ -22,18 +22,27 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_login.*
 import ng.inits.alphamessenger.MainActivity
 import ng.inits.alphamessenger.R
+import ng.inits.alphamessenger.data.PreferenceManager
+import ng.inits.alphamessenger.data.User
 import java.util.ArrayList
 
 class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    lateinit var pref: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        pref = PreferenceManager(this)
 
         populateAutoComplete()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -53,9 +62,11 @@ class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
             Log.d(TAG, "User is logged in already")
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+            val intent = if (pref.hasPassedSetup()) Intent(this, MainActivity::class.java)
+                else Intent(this, SetupActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 
@@ -94,12 +105,38 @@ class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>
     }
 
     private fun login(emailStr: String, passwordStr: String) {
+        Log.d(TAG, "Logging in")
         firebaseAuth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
                         Log.d(TAG, "Signed in")
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
+                        Toast.makeText(this, "Signed in as ${it.result.user.email}", Toast.LENGTH_LONG).show()
+
+                        // Check if user has setup his profile
+                        val database = FirebaseDatabase.getInstance().reference
+                        database.child("users").child(it.result.user.uid).addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onCancelled(error: DatabaseError?) {
+                                Log.w(TAG, "Database error: ${error?.message}", error?.toException())
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot?) {
+                                val user = snapshot?.getValue(User::class.java)
+                                Log.d(TAG, "User details: ${user?.email}")
+                                if (TextUtils.isEmpty(user?.name)) {
+                                    Log.w(TAG, "User has not setup profile")
+                                    val intent = Intent(this@LoginActivity, SetupActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    startActivity(intent)
+                                } else {
+                                    pref.markPassedSetup()
+                                    Log.d(TAG, "Continue to MainActivity")
+                                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            }
+
+                        })
                     } else {
                         // Unsuccessful
                         Log.w(TAG, "Sign in failure", it.exception)
