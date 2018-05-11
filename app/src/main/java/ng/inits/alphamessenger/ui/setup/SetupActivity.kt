@@ -1,4 +1,4 @@
-package ng.inits.alphamessenger.ui
+package ng.inits.alphamessenger.ui.setup
 
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
@@ -11,7 +11,7 @@ class SetupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivitySetupBinding = DataBindingUtil.setContentView(this, R.layout.activity_setup)
-        val model = SetupViewModel()
+        val model = SetupViewModel(this)
         binding.model = model
     }
 }

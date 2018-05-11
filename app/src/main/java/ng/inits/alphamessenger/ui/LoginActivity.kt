@@ -31,6 +31,7 @@ import ng.inits.alphamessenger.MainActivity
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.PreferenceManager
 import ng.inits.alphamessenger.data.User
+import ng.inits.alphamessenger.ui.setup.SetupActivity
 import java.util.ArrayList
 
 class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {

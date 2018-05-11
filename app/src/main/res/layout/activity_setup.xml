@@ -3,7 +3,7 @@
     <data>
         <variable
             name="model"
-            type="ng.inits.alphamessenger.ui.SetupViewModel"/>
+            type="ng.inits.alphamessenger.ui.setup.SetupViewModel"/>
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,11 +11,12 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.SetupActivity">
+        tools:context=".ui.setup.SetupActivity">
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="@{model.formVisibility}">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -35,12 +36,15 @@
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    app:error="@{model.nameError}">
 
                     <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/prompt_name"/>
+                        android:hint="@string/prompt_name"
+                        android:text="@={model.name}"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -51,6 +55,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_arrow_forward"
+                    android:onClick="@{model::save}"
                     app:fabSize="normal"/>
             </LinearLayout>
 

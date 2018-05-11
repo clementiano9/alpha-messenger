@@ -34,9 +34,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 
 import kotlinx.android.synthetic.main.activity_signup.*
-import ng.inits.alphamessenger.MainActivity
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.User
+import ng.inits.alphamessenger.ui.setup.SetupActivity
 
 /**
  * A login screen that offers login via email/password.
