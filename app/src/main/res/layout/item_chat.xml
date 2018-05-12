@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+<de.hdodenhof.circleimageview.CircleImageView
+    android:id="@+id/profile_pic"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+    android:layout_marginRight="16dp"
+        android:src="#e5e5e5"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/profile_pic"
+        android:layout_toLeftOf="@+id/time"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="John Doe"
+            android:textSize="16sp"
+            style="@style/TextAppearance.AppCompat.Body2"/>
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hey wassup"
+            android:textSize="14sp"
+            android:alpha="0.6"
+            android:lines="1"
+            android:ellipsize="end"
+            style="@style/TextAppearance.AppCompat.Body1"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:text="Today"
+        style="@style/TextAppearance.AppCompat.Caption" />
+
+</RelativeLayout>

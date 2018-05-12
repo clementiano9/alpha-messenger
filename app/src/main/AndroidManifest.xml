@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.SignupActivity"
-            android:label="@string/title_signup"></activity>
+            android:label="@string/title_signup" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -31,8 +31,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.setup.SetupActivity"
-            android:label="@string/title_setup"/>
+        <activity
+            android:name=".ui.setup.SetupActivity"
+            android:label="@string/title_setup" />
+        <activity android:name=".ui.messaging.MessagingActivity"></activity>
     </application>
 
 </manifest>
