@@ -101,9 +101,9 @@ class ChatsFragment : Fragment() {
                 Log.d(TAG, "Chat clicked")
                 val intent = Intent(context, MessagingActivity::class.java)
                 intent.apply {
-                    putExtra(MessageContract.CHAT_ID, chat?.id)
-                    putExtra(MessageContract.CHAT_RECIPIENT_ID, chat?.receiverId)
-                    putExtra(MessageContract.CHAT_RECIPIENT_NAME, chat?.receiverName)
+                    //putExtra(MessageContract.CHAT_ID, chat?.id)
+                    putExtra(MessageContract.CHAT_RECIPIENT_ID, chat?.contactId)
+                    putExtra(MessageContract.CHAT_RECIPIENT_NAME, chat?.contactName)
                 }
                 startActivity(intent)
             }
@@ -118,8 +118,8 @@ class ChatsFragment : Fragment() {
         val message: TextView = itemView.findViewById(R.id.message)
 
         fun bind(chat: Chat?) {
-            name.text = chat?.receiverName
-            message.text = chat?.message
+            name.text = chat?.contactName
+            message.text = chat?.lastMessage
         }
     }
 

@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.contact.ContactFragment">
+<layout>
+    <data>
+        <variable
+            name="model"
+            type="ng.inits.alphamessenger.ui.contact.ContactsViewModel" />
+    </data>
 
-    <ProgressBar
-        android:id="@+id/progress_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.contact.ContactFragment">
 
-    <LinearLayout
-        android:id="@+id/no_contacts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <TextView
+        <ProgressBar
+            android:id="@+id/progress_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You don't have any contact" />
+            android:layout_gravity="center"
+            android:visibility="@{model.progressVisibility}"
+            tools:visibility="invisible"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/no_contacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{model.emptyVisibility}"
+            tools:visibility="invisible">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You don't have any contact" />
 
-</FrameLayout>
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{model.contentVisibility}"
+            tools:visibility="visible"/>
+
+    </FrameLayout>
+</layout>
