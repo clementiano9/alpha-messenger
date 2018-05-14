@@ -83,6 +83,8 @@ class ChatsFragment : Fragment() {
         Log.d(TAG, "Check if there are no chats")
         if (_adapter.itemCount < 1) {
             viewModel.setEmpty(true)
+        } else {
+            viewModel.setEmpty(false)
         }
     }
 
@@ -94,7 +96,8 @@ class ChatsFragment : Fragment() {
     ) {
 
         override fun populateViewHolder(viewHolder: ChatViewHolder?, chat: Chat?, position: Int) {
-            viewModel.fetchChats()
+            //viewModel.fetchChats()
+            viewModel.progressVisibility.set(View.GONE)
 
             viewHolder?.itemView?.setOnClickListener {
                 Log.d(TAG, "Chat clicked")
