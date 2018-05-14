@@ -21,7 +21,7 @@ data class Chat(
         var lastMessage: String = "",
         var contactId: String = "",
         var contactName: String = "",
-        var lastMessageTimestamp: Long = 0L
+        var lastMessageAt: Long = 0L
 )
 
 data class Message(

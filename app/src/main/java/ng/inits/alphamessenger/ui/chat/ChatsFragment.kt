@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.fragment_chats.*
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.Chat
 import ng.inits.alphamessenger.databinding.FragmentChatsBinding
-import ng.inits.alphamessenger.ui.messaging.MessageContract
-import ng.inits.alphamessenger.ui.messaging.MessagingActivity
+import ng.inits.alphamessenger.ui.messaging.ChatContract
+import ng.inits.alphamessenger.ui.messaging.ChatScreenActivity
 
 /**
  * List of chat threads
@@ -95,20 +95,21 @@ class ChatsFragment : Fragment() {
             query
     ) {
 
-        override fun populateViewHolder(viewHolder: ChatViewHolder?, chat: Chat?, position: Int) {
-            //viewModel.fetchChats()
+        override fun populateViewHolder(viewHolder: ChatViewHolder?, chat: Chat, position: Int) {
             viewModel.progressVisibility.set(View.GONE)
 
             viewHolder?.itemView?.setOnClickListener {
-                Log.d(TAG, "Chat clicked")
-                val intent = Intent(context, MessagingActivity::class.java)
+                Log.d(TAG, "Chat clicked: ${chat.contactName}")
+                val intent = Intent(context, ChatScreenActivity::class.java)
                 intent.apply {
-                    //putExtra(MessageContract.CHAT_ID, chat?.id)
-                    putExtra(MessageContract.CHAT_RECIPIENT_ID, chat?.contactId)
-                    putExtra(MessageContract.CHAT_RECIPIENT_NAME, chat?.contactName)
+                    putExtra(ChatContract.CHAT_ID, chat.id)
+                    putExtra(ChatContract.CHAT_RECIPIENT_ID, chat.contactId)
+                    putExtra(ChatContract.CHAT_RECIPIENT_NAME, chat.contactName)
                 }
                 startActivity(intent)
             }
+
+            viewHolder?.bind(chat)
         }
 
     }
