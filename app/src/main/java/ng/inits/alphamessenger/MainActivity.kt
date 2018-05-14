@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import ng.inits.alphamessenger.ui.LoginActivity
-import ng.inits.alphamessenger.ui.contact.ChatsFragment
+import ng.inits.alphamessenger.ui.chat.ChatsFragment
 import ng.inits.alphamessenger.ui.contact.ContactFragment
 
 class MainActivity : AppCompatActivity() {

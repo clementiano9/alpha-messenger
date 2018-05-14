@@ -16,9 +16,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_contact.*
-
 import ng.inits.alphamessenger.R
-import ng.inits.alphamessenger.data.Chat
 import ng.inits.alphamessenger.data.Contact
 import ng.inits.alphamessenger.databinding.FragmentContactBinding
 
@@ -76,7 +74,7 @@ class ContactFragment : Fragment() {
     }
 
     private fun isContactListEmpty() {
-        Log.d(ChatsFragment.TAG, "Check if there are no contacts")
+        Log.d(TAG, "Check if there are no contacts")
         if (mAdapter.itemCount < 1) {
             viewModel.setEmpty(true)
             Log.d(TAG, "No contacts")

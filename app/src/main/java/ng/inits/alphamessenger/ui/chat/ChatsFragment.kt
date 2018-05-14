@@ -1,4 +1,4 @@
-package ng.inits.alphamessenger.ui.contact
+package ng.inits.alphamessenger.ui.chat
 
 
 import android.content.Context
@@ -17,7 +17,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_chats.*
-import kotlinx.android.synthetic.main.item_chat.view.*
 
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.Chat
@@ -26,7 +25,7 @@ import ng.inits.alphamessenger.ui.messaging.MessageContract
 import ng.inits.alphamessenger.ui.messaging.MessagingActivity
 
 /**
- * A simple [Fragment] subclass.
+ * List of chat threads
  *
  */
 class ChatsFragment : Fragment() {

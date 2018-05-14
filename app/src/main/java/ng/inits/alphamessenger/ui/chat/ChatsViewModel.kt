@@ -1,4 +1,4 @@
-package ng.inits.alphamessenger.ui.contact
+package ng.inits.alphamessenger.ui.chat
 
 import android.databinding.BaseObservable
 import android.databinding.ObservableInt
