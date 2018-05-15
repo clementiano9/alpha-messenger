@@ -11,6 +11,7 @@ data class User(
 
 data class Contact(
         var id: String = "",
+        var chatId: String = "",
         var name: String = "",
         var email: String = "",
         var addedAt: Long = 0L
@@ -28,8 +29,6 @@ data class Message(
         var id: String = "",
         var message: String = "",
         var senderId: String = "",
-        var senderName: String = "",
         var receiverId: String = "",
-        var receiverName: String = "",
         var timestamp: Long = 0L
 )

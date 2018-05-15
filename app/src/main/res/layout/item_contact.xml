@@ -2,7 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_view"
@@ -15,7 +18,7 @@
         android:id="@+id/contact_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Johm Doe"
+        tools:text="John Doe"
         android:layout_toRightOf="@+id/image_view"
         android:textSize="16sp"
         android:layout_centerVertical="true"

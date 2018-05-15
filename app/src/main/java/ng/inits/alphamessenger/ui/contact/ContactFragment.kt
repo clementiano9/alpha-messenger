@@ -2,6 +2,7 @@ package ng.inits.alphamessenger.ui.contact
 
 
 import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -19,6 +20,8 @@ import kotlinx.android.synthetic.main.fragment_contact.*
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.Contact
 import ng.inits.alphamessenger.databinding.FragmentContactBinding
+import ng.inits.alphamessenger.ui.messaging.ChatContract
+import ng.inits.alphamessenger.ui.messaging.ChatScreenActivity
 
 /**
  * A simple [Fragment] subclass.
@@ -96,6 +99,13 @@ class ContactFragment : Fragment() {
 
             viewHolder?.itemView?.setOnClickListener {
                 // Launch chat screen
+                val intent = Intent(context, ChatScreenActivity::class.java)
+                intent.apply {
+                    putExtra(ChatContract.CHAT_ID, model?.chatId) // Undefined because a chat has not been initiated yet
+                    putExtra(ChatContract.CHAT_RECIPIENT_ID, model?.id)
+                    putExtra(ChatContract.CHAT_RECIPIENT_NAME, model?.name)
+                }
+                startActivity(intent)
             }
 
             viewHolder?.bind(model)
