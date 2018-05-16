@@ -21,7 +21,7 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="1"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name">
 
@@ -35,7 +35,7 @@
             app:tabIndicatorHeight="1.6dp"
             app:tabMode="scrollable"
             app:tabGravity="fill"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+            app:layout_collapseMode="pin"
             />
 
     </android.support.design.widget.AppBarLayout>

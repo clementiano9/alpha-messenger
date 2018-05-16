@@ -9,14 +9,18 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_chat_screen.*
-import kotlinx.android.synthetic.main.item_message.view.*
+import kotlinx.android.synthetic.main.item_message.*
 import ng.inits.alphamessenger.R
+import ng.inits.alphamessenger.common.formatTime
 import ng.inits.alphamessenger.data.Message
 import ng.inits.alphamessenger.databinding.ActivityChatScreenBinding
 
@@ -28,6 +32,7 @@ class ChatScreenActivity : AppCompatActivity() {
     private lateinit var viewModel: ChatScreenViewModel
     private lateinit var binding: ActivityChatScreenBinding
     private lateinit var database: DatabaseReference
+    val user = FirebaseAuth.getInstance().currentUser
 
     private lateinit var query: Query
 
@@ -45,7 +50,7 @@ class ChatScreenActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         database = FirebaseDatabase.getInstance().reference
-        val user = FirebaseAuth.getInstance().currentUser
+
         query = database.child("messages").child(chatId).orderByChild("timestamp")
 
         setupRecyclerView()
@@ -75,7 +80,7 @@ class ChatScreenActivity : AppCompatActivity() {
             override fun populateViewHolder(viewHolder: MessageViewHolder?, model: Message?, position: Int) {
                 Log.d(TAG, "Populate view holder $position, $itemCount total, message: ${model?.message}")
                 viewModel.progressVisibility.set(View.GONE)
-                viewHolder?.bind(model)
+                viewHolder?.bind(model, user)
             }
 
             override fun onChildChanged(type: ChangeEventListener.EventType?, index: Int, oldIndex: Int) {
@@ -112,15 +117,34 @@ class ChatScreenActivity : AppCompatActivity() {
 
     }
 
-    class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class MessageViewHolder(override val containerView: View?) : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
         val messageText = itemView.findViewById<TextView>(R.id.message)
         val dateText = itemView.findViewById<TextView>(R.id.date)
 
-        fun bind(message: Message?) {
+        fun bind(message: Message?, user: FirebaseUser?) {
             Log.d(TAG, "MessageViewHolder: bind ${message?.message}")
             messageText.text = message?.message
-            //messageText.date = message?.timestamp
+            dateText.text = message?.timestamp?.formatTime()
+
+            if (message?.senderId.equals(user?.uid)) {
+                // User is sender
+                val layoutParams = chat_bubble.layoutParams as RelativeLayout.LayoutParams
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT)
+                chat_bubble.layoutParams = layoutParams
+                chat_bubble.setBackgroundResource(R.drawable.bg_chat_sent)
+                messageText.setTextColor(containerView?.resources?.getColor(R.color.text_sent)!!)
+
+            } else {
+                // User is receiver
+                val layoutParams = chat_bubble.layoutParams as RelativeLayout.LayoutParams
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+                layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                chat_bubble.layoutParams = layoutParams
+                chat_bubble.setBackgroundResource(R.drawable.bg_chat_received)
+                messageText.setTextColor(containerView?.resources?.getColor(R.color.text_received)!!)
+            }
         }
     }
 

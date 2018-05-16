@@ -22,7 +22,7 @@ class ChatScreenViewModel(var chatId: String?, val recipientId: String?) : BaseO
 
     fun sendClicked(view: View) {
         Log.d(TAG, "Send clicked: ${message.get()}")
-        if (message.get().isEmpty()) return
+        if (message.get().isNullOrEmpty()) return
 
         // Create a new message at /messages/{chatId} and update lastMessage and lastMessageAt at /chats/{userId} for both users
         val key = database.push().key
