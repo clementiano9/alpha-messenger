@@ -14,13 +14,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_chats.*
 
 import ng.inits.alphamessenger.R
-import ng.inits.alphamessenger.common.inflate
 import ng.inits.alphamessenger.data.Chat
 import ng.inits.alphamessenger.databinding.FragmentChatsBinding
 import ng.inits.alphamessenger.ui.messaging.ChatContract
@@ -47,18 +45,13 @@ class ChatsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.fetchChats()
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser
         query = database.child("chats").child(user?.uid)
-
-        val options = FirebaseRecyclerOptions.Builder<Chat>()
-                .setQuery(query, Chat::class.java)
-                .build()
-
-        _adapter = ChatsAdapter(options, activity)
+        _adapter = ChatsAdapter(query, activity)
 
         recycler_view.apply {
             layoutManager = LinearLayoutManager(activity)
@@ -95,16 +88,14 @@ class ChatsFragment : Fragment() {
         }
     }
 
-    inner class ChatsAdapter(val options: FirebaseRecyclerOptions<Chat>, val context: Context?)
-        : FirebaseRecyclerAdapter<Chat , ChatViewHolder> (options) {
+    inner class ChatsAdapter(val query: Query, val context: Context) : FirebaseRecyclerAdapter<Chat , ChatViewHolder> (
+            Chat::class.java,
+            R.layout.item_chat,
+            ChatViewHolder::class.java,
+            query
+    ) {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
-            val view = parent.inflate(R.layout.item_chat)
-            return ChatViewHolder(view)
-        }
-
-        override fun onBindViewHolder(viewHolder: ChatViewHolder, position: Int, chat: Chat) {
-
+        override fun populateViewHolder(viewHolder: ChatViewHolder?, chat: Chat, position: Int) {
             viewModel.progressVisibility.set(View.GONE)
 
             viewHolder?.itemView?.setOnClickListener {
@@ -118,7 +109,7 @@ class ChatsFragment : Fragment() {
                 startActivity(intent)
             }
 
-            viewHolder.bind(chat)
+            viewHolder?.bind(chat)
         }
 
     }

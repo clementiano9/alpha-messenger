@@ -9,13 +9,10 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -24,9 +21,6 @@ import kotlinx.android.synthetic.main.activity_chat_screen.*
 import kotlinx.android.synthetic.main.item_message.*
 import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.common.formatTime
-import ng.inits.alphamessenger.common.inflate
-import ng.inits.alphamessenger.data.Chat
-import ng.inits.alphamessenger.data.Contact
 import ng.inits.alphamessenger.data.Message
 import ng.inits.alphamessenger.databinding.ActivityChatScreenBinding
 
@@ -77,25 +71,20 @@ class ChatScreenActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         Log.d(TAG, "Setting up recycler view")
-        val options = FirebaseRecyclerOptions.Builder<Message>()
-                .setQuery(query, Message::class.java)
-                .build()
-
         val _adapter = object: FirebaseRecyclerAdapter<Message, MessageViewHolder> (
-                options
+                Message::class.java,
+                R.layout.item_message,
+                MessageViewHolder::class.java,
+                query
         ) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-                return MessageViewHolder(parent.inflate(R.layout.item_message))
-            }
-
-            override fun onBindViewHolder(viewHolder: MessageViewHolder, position: Int, model: Message) {
+            override fun populateViewHolder(viewHolder: MessageViewHolder?, model: Message?, position: Int) {
                 Log.d(TAG, "Populate view holder $position, $itemCount total, message: ${model?.message}")
                 viewModel.progressVisibility.set(View.GONE)
-                viewHolder.bind(model, user)
+                viewHolder?.bind(model, user)
             }
 
-            override fun onChildChanged(type: ChangeEventType, snapshot: DataSnapshot, newIndex: Int, oldIndex: Int) {
-                super.onChildChanged(type, snapshot, newIndex, oldIndex)
+            override fun onChildChanged(type: ChangeEventListener.EventType?, index: Int, oldIndex: Int) {
+                super.onChildChanged(type, index, oldIndex)
                 Log.d(TAG, "Message was added")
                 recycler_view.scrollToPosition(itemCount - 1 )
             }

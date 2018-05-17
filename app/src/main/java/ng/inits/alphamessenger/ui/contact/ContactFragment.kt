@@ -14,13 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import ng.inits.alphamessenger.R
-import ng.inits.alphamessenger.common.inflate
-import ng.inits.alphamessenger.data.Chat
 import ng.inits.alphamessenger.data.Contact
 import ng.inits.alphamessenger.databinding.FragmentContactBinding
 import ng.inits.alphamessenger.ui.messaging.ChatContract
@@ -46,18 +43,13 @@ class ContactFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.setLoading()
         database = FirebaseDatabase.getInstance().reference
         val user = FirebaseAuth.getInstance().currentUser
         query = database.child("contacts").child(user?.uid)
-
-        val options = FirebaseRecyclerOptions.Builder<Contact>()
-                .setQuery(query, Contact::class.java)
-                .build()
-
-        mAdapter = ContactsAdapter(options, activity)
+        mAdapter = ContactsAdapter(query, activity)
         recycler_view.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = mAdapter
@@ -95,15 +87,14 @@ class ContactFragment : Fragment() {
         }
     }
 
-    inner class ContactsAdapter(options: FirebaseRecyclerOptions<Contact>, val context: Context?)
-        : FirebaseRecyclerAdapter<Contact, ContactsViewHolder> (options) {
+    inner class ContactsAdapter(query: Query?, val context: Context) : FirebaseRecyclerAdapter<Contact, ContactsViewHolder> (
+            Contact::class.java,
+            R.layout.item_contact,
+            ContactsViewHolder::class.java,
+            query
+    ) {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
-            return ContactsViewHolder(parent.inflate(R.layout.item_contact))
-        }
-
-        override fun onBindViewHolder(viewHolder: ContactsViewHolder, position: Int, model: Contact) {
-
+        override fun populateViewHolder(viewHolder: ContactsViewHolder?, model: Contact?, position: Int) {
             viewModel.progressVisibility.set(View.GONE)
 
             viewHolder?.itemView?.setOnClickListener {
