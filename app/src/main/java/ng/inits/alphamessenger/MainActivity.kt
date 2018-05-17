@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.fragment_main.view.*
 import ng.inits.alphamessenger.ui.LoginActivity
 import ng.inits.alphamessenger.ui.chat.ChatsFragment
 import ng.inits.alphamessenger.ui.contact.ContactFragment
+import ng.inits.alphamessenger.ui.search_contact.SearchContactActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +41,10 @@ class MainActivity : AppCompatActivity() {
         container.adapter = mSectionsPagerAdapter
         tab_layout.setupWithViewPager(container)
         tab_layout.tabMode = TabLayout.MODE_FIXED
+
+        add_contact_btn.setOnClickListener {
+            startActivity(Intent(this, SearchContactActivity::class.java))
+        }
     }
 
 
