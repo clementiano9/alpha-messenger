@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -32,7 +33,7 @@ import ng.inits.alphamessenger.R
 import ng.inits.alphamessenger.data.PreferenceManager
 import ng.inits.alphamessenger.data.User
 import ng.inits.alphamessenger.ui.setup.SetupActivity
-import java.util.ArrayList
+import java.util.*
 
 class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -68,6 +69,13 @@ class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>
                 else Intent(this, SetupActivity::class.java)
             startActivity(intent)
             finish()
+        } else {
+            // not signed in
+            val intent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(Arrays.asList(AuthUI.IdpConfig.PhoneBuilder().build()))
+                    .build()
+            startActivityForResult(intent, RC_SIGN_IN)
         }
     }
 
@@ -235,7 +243,8 @@ class LoginActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>
     companion object {
 
         //Id to identity READ_CONTACTS permission request
-        private const val REQUEST_READ_CONTACTS = 0
         private val TAG: String = LoginActivity::class.java.simpleName
+        private const val REQUEST_READ_CONTACTS = 0
+        private val RC_SIGN_IN = 3
     }
 }

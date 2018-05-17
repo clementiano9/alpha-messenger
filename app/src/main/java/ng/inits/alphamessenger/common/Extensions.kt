@@ -3,7 +3,9 @@ package ng.inits.alphamessenger.common
 import android.app.Activity
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.regex.Pattern
@@ -11,6 +13,11 @@ import java.util.regex.Pattern
 /**
  * Created by Clement Ozemoya on 10/05/2018.
  */
+
+fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false) : View {
+    return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
+}
+
 fun Fragment.snackbar(str: String, length: Int = Snackbar.LENGTH_SHORT) {
     rootView?.let {
         Snackbar.make(it, str, length).show()
