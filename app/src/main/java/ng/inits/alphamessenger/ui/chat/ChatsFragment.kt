@@ -63,6 +63,8 @@ class ChatsFragment : Fragment() {
             override fun onChanged() {
                 super.onChanged()
                 Log.d(TAG, "Data changed")
+                _adapter.notifyDataSetChanged()
+                isChatEmpty()
             }
         })
 

@@ -42,7 +42,11 @@ class ChatScreenActivity : AppCompatActivity() {
 
         Log.d(TAG, "[ChatScreenActivity] onCreate")
         getDataFromIntent()
-        viewModel = ChatScreenViewModel(chatId, recipientId, recipientName)
+        viewModel = ChatScreenViewModel(chatId, recipientId, recipientName) {
+            // Chat Id updated
+            setupRecyclerView()
+        }
+
         binding.model = viewModel
 
         setSupportActionBar(toolbar)
@@ -51,7 +55,7 @@ class ChatScreenActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().reference
 
-        query = database.child("messages").child(chatId).orderByChild("timestamp")
+        Log.d(TAG, "ChatID = $chatId")
 
         setupRecyclerView()
     }
@@ -70,6 +74,10 @@ class ChatScreenActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
+        if (viewModel.chatId.get().isNullOrEmpty())
+            return
+
+        query = database.child("messages").child(viewModel.chatId.get()).orderByChild("timestamp")
         val _adapter = object: FirebaseRecyclerAdapter<Message, MessageViewHolder> (
                 Message::class.java,
                 R.layout.item_message,
@@ -89,7 +97,7 @@ class ChatScreenActivity : AppCompatActivity() {
         }
 
         val linearLayoutManager = LinearLayoutManager(this@ChatScreenActivity)
-        linearLayoutManager.reverseLayout = true
+        linearLayoutManager.stackFromEnd = true
         recycler_view.apply {
             adapter = _adapter
             layoutManager = linearLayoutManager

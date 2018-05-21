@@ -17,7 +17,9 @@ import org.joda.time.DateTime
 /**
  * Created by Clement Ozemoya on 14/05/2018.
  */
-class ChatScreenViewModel(var chatId: String?, val recipientId: String?, val recipientName: String?) : BaseObservable() {
+class ChatScreenViewModel(var initChatId: String?, val recipientId: String?, val recipientName: String?,
+                          val callback: () -> Unit = {}) : BaseObservable() {
+    val chatId = ObservableField<String>(initChatId)
     var progressVisibility = ObservableInt(View.GONE)
     var message = ObservableField<String>()
 
@@ -56,40 +58,45 @@ class ChatScreenViewModel(var chatId: String?, val recipientId: String?, val rec
         // If a chat has not been initiated/created btw the two people
         // Create chat data for each person
         var shouldUpdateContact = false
-        if (chatId.isNullOrEmpty()) {
-            chatId = database.push().key
+        if (chatId.get().isNullOrEmpty()) {
+            chatId.set(database.push().key)
             shouldUpdateContact = true
+            Log.d(TAG, "New chat key created = ${chatId.get()}")
         }
 
         database.child("messages")
-                .child(chatId)
+                .child(chatId.get())
                 .child(key)
                 .setValue(messageData)
 
         val updates = HashMap<String, Any>()
-        updates["/chats/${user.uid}/$chatId/lastMessage"] = message.get()
-        updates["/chats/${user.uid}/$chatId/lastMessageAt"] = timestamp
-        updates["/chats/${user.uid}/$chatId/lastMessageSender"] = user.uid
-        updates["/chats/$recipientId/$chatId/lastMessage"] = message.get()
-        updates["/chats/$recipientId/$chatId/lastMessageAt"] = timestamp
-        updates["/chats/$recipientId/$chatId/lastMessageSender"] = user.uid
+        updates["/chats/${user.uid}/${chatId.get()}/lastMessage"] = message.get()
+        updates["/chats/${user.uid}/${chatId.get()}/lastMessageAt"] = timestamp
+        updates["/chats/${user.uid}/${chatId.get()}/lastMessageSender"] = user.uid
+        updates["/chats/$recipientId/${chatId.get()}/lastMessage"] = message.get()
+        updates["/chats/$recipientId/${chatId.get()}/lastMessageAt"] = timestamp
+        updates["/chats/$recipientId/${chatId.get()}/lastMessageSender"] = user.uid
 
         // Update the contact to reflect the chatId if the chat was newly created
         if (shouldUpdateContact) {
-            updates["/contacts/${user.uid}/$recipientId/chatId"] = chatId as Any
-            updates["/contacts/$recipientId/${user.uid}/chatId"] = chatId as Any
+            updates["/contacts/${user.uid}/$recipientId/chatId"] = chatId.get() as Any
+            updates["/contacts/$recipientId/${user.uid}/chatId"] = chatId.get() as Any
 
             // Add info to the chat data for newly created chats
-            updates["/chats/${user.uid}/$chatId/contactId"] = recipientId
-            updates["/chats/${user.uid}/$chatId/contactName"] = recipientName!!
-            updates["/chats/$recipientId/$chatId/contactId"] = user.uid
-            updates["/chats/$recipientId/$chatId/contactName"] = userObject.name
+            updates["/chats/${user.uid}/${chatId.get()}/id"] = chatId.get()
+            updates["/chats/${user.uid}/${chatId.get()}/contactId"] = recipientId
+            updates["/chats/${user.uid}/${chatId.get()}/contactName"] = recipientName!!
+            updates["/chats/$recipientId/${chatId.get()}/id"] = chatId.get()
+            updates["/chats/$recipientId/${chatId.get()}/contactId"] = user.uid
+            updates["/chats/$recipientId/${chatId.get()}/contactName"] = userObject.name
 
         }
 
         database.updateChildren(updates) { databaseError, databaseReference ->
             if (databaseError != null) {
                 Log.w(TAG, "Error updating database with message", databaseError.toException())
+            } else {
+                callback()
             }
         }
 
