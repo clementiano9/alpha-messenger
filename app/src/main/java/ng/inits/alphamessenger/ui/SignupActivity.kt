@@ -151,7 +151,6 @@ class SignupActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     }
 
     private fun signUp(emailStr: String, passwordStr: String) {
-        //FirebaseApp.initializeApp(this)
 
         firebaseAuth.createUserWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener { task: Task<AuthResult> ->

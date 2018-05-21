@@ -30,6 +30,12 @@ val Fragment.rootView
 val Activity.rootView
     get() = this.window.decorView.findViewById<View>(android.R.id.content)
 
+fun Activity.snackbar(str: String, length: Int = Snackbar.LENGTH_SHORT) {
+    rootView?.let {
+        Snackbar.make(it, str, length).show()
+    }
+}
+
 fun DateTime.getFormattedTime() : String {
     lateinit var formattedTime: String
     val now = DateTime.now()

@@ -37,8 +37,10 @@
         <activity
             android:name=".ui.messaging.ChatScreenActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.search_contact.SearchContactActivity"
+        <activity
+            android:name=".ui.search_contact.SearchContactActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.profile.ProfileActivity"></activity>
     </application>
 
 </manifest>

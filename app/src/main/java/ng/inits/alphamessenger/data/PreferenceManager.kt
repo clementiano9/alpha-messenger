@@ -8,7 +8,7 @@ import android.content.SharedPreferences
  */
 class PreferenceManager(val context: Context) {
 
-    lateinit var preferences: SharedPreferences
+    var preferences: SharedPreferences
 
     init {
         preferences = context.getSharedPreferences(PREF_FILENAME, Context.MODE_PRIVATE)

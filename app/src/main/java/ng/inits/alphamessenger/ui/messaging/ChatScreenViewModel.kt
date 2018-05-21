@@ -6,19 +6,37 @@ import android.databinding.ObservableInt
 import android.util.Log
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import ng.inits.alphamessenger.data.Message
+import ng.inits.alphamessenger.data.User
 import org.joda.time.DateTime
 
 /**
  * Created by Clement Ozemoya on 14/05/2018.
  */
-class ChatScreenViewModel(var chatId: String?, val recipientId: String?) : BaseObservable() {
+class ChatScreenViewModel(var chatId: String?, val recipientId: String?, val recipientName: String?) : BaseObservable() {
     var progressVisibility = ObservableInt(View.GONE)
     var message = ObservableField<String>()
 
     val database = FirebaseDatabase.getInstance().reference
     val user = FirebaseAuth.getInstance().currentUser
+    lateinit var userObject: User
+
+    init {
+        database.child("users").child(user?.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userObject = snapshot.getValue(User::class.java)
+            }
+
+        })
+    }
 
     fun sendClicked(view: View) {
         Log.d(TAG, "Send clicked: ${message.get()}")
@@ -51,13 +69,22 @@ class ChatScreenViewModel(var chatId: String?, val recipientId: String?) : BaseO
         val updates = HashMap<String, Any>()
         updates["/chats/${user.uid}/$chatId/lastMessage"] = message.get()
         updates["/chats/${user.uid}/$chatId/lastMessageAt"] = timestamp
+        updates["/chats/${user.uid}/$chatId/lastMessageSender"] = user.uid
         updates["/chats/$recipientId/$chatId/lastMessage"] = message.get()
-        updates["/chats/$recipientId/$chatId/lastMessage"] = timestamp
+        updates["/chats/$recipientId/$chatId/lastMessageAt"] = timestamp
+        updates["/chats/$recipientId/$chatId/lastMessageSender"] = user.uid
 
         // Update the contact to reflect the chatId if the chat was newly created
         if (shouldUpdateContact) {
             updates["/contacts/${user.uid}/$recipientId/chatId"] = chatId as Any
             updates["/contacts/$recipientId/${user.uid}/chatId"] = chatId as Any
+
+            // Add info to the chat data for newly created chats
+            updates["/chats/${user.uid}/$chatId/contactId"] = recipientId
+            updates["/chats/${user.uid}/$chatId/contactName"] = recipientName!!
+            updates["/chats/$recipientId/$chatId/contactId"] = user.uid
+            updates["/chats/$recipientId/$chatId/contactName"] = userObject.name
+
         }
 
         database.updateChildren(updates) { databaseError, databaseReference ->

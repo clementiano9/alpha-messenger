@@ -42,7 +42,7 @@ class ChatScreenActivity : AppCompatActivity() {
 
         Log.d(TAG, "[ChatScreenActivity] onCreate")
         getDataFromIntent()
-        viewModel = ChatScreenViewModel(chatId, recipientId)
+        viewModel = ChatScreenViewModel(chatId, recipientId, recipientName)
         binding.model = viewModel
 
         setSupportActionBar(toolbar)
@@ -57,7 +57,7 @@ class ChatScreenActivity : AppCompatActivity() {
     }
 
     private fun getDataFromIntent() {
-        chatId = intent.getStringExtra(ChatContract.CHAT_ID)
+        chatId = intent.getStringExtra(ChatContract.CHAT_ID) // todo fix empty chat still shows weird unknown message
         recipientName = intent.getStringExtra(ChatContract.CHAT_RECIPIENT_NAME)
         recipientId = intent.getStringExtra(ChatContract.CHAT_RECIPIENT_ID)
         Log.d(TAG, "Recipient name: $recipientName")
@@ -70,7 +70,6 @@ class ChatScreenActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        Log.d(TAG, "Setting up recycler view")
         val _adapter = object: FirebaseRecyclerAdapter<Message, MessageViewHolder> (
                 Message::class.java,
                 R.layout.item_message,
@@ -85,13 +84,12 @@ class ChatScreenActivity : AppCompatActivity() {
 
             override fun onChildChanged(type: ChangeEventListener.EventType?, index: Int, oldIndex: Int) {
                 super.onChildChanged(type, index, oldIndex)
-                Log.d(TAG, "Message was added")
                 recycler_view.scrollToPosition(itemCount - 1 )
             }
         }
 
         val linearLayoutManager = LinearLayoutManager(this@ChatScreenActivity)
-        linearLayoutManager.reverseLayout
+        linearLayoutManager.reverseLayout = true
         recycler_view.apply {
             adapter = _adapter
             layoutManager = linearLayoutManager
